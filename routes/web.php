@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EmitScope;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +21,8 @@ Route::get('/', function () {
 Route::get('/scope', function () {
   return view('scope');
 });
+
+Route::post('/scope', [EmitScope::class, 'sendDataToNode']);
+
+
+Route::middleware('allowCrossOrigin')->post('/receive-data', [EmitScope::class, 'sendDataToNode']);

@@ -1,32 +1,66 @@
 const express = require('express');
+const axios = require('axios');
+const csrf = require('csurf');
+const cookieParser = require('cookie-parser');
+
 
 const app = express();
-
-
 const server = require('http').createServer(app);
-
-
 const io = require('socket.io')(server, {
-    cors: { origin: "*"}
+  cors: { origin: "*" }
 });
 
 
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
+
+// Sử dụng csrf middleware
+const csrfProtection = csrf({ cookie: true });
+app.use(csrfProtection);
+
+// Middleware để gửi CSRF token cho client
+app.use((req, res, next) => {
+  res.cookie('XSRF-TOKEN', req.csrfToken());
+  next();
+});
+
+
+async function sendDataToLaravel(data, req) {
+  try {
+    const response = await axios.post('http://127.0.0.1:8000/receive-data', data, {
+      // headers: {
+      //   'X-CSRF-TOKEN': req.cookies['XSRF-TOKEN']
+      // }
+    });
+    console.log('Response from Laravel:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error sending data to Laravel:', error.message);
+    throw error;
+  }
+}
+
 io.on('connection', (socket) => {
-    console.log('connection');
+  console.log('connection');
 
-    socket.on('sendChatToServer', (message) => {
-        console.log(message);
+  socket.on('sendChatToServer', async (message) => {
+    console.log(message);
 
-        // io.sockets.emit('sendChatToClient', message);
-        socket.broadcast.emit('sendChatToClient', message);
-    });
+    try {
+      const responseData = await sendDataToLaravel(message);
+      console.log('Data sent to Laravel successfully:', responseData);
+    } catch (error) {
+      console.error('Failed to send data to Laravel:', error.message);
+    }
 
+    socket.broadcast.emit('sendChatToClient', message);
+  });
 
-    socket.on('disconnect', (socket) => {
-        console.log('Disconnect');
-    });
+  socket.on('disconnect', () => {
+    console.log('Disconnect');
+  });
 });
 
 server.listen(3000, () => {
-    console.log('Server is running');
+  console.log('Server is running');
 });
