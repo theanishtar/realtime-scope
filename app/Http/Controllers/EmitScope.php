@@ -20,21 +20,26 @@ class EmitScope extends Controller
 
         if ($user) {
             // Nếu user tồn tại, cập nhật trường scope lên 1 đơn vị
-            $user->scope += 1;
+            $user->scope += $scope;
             $user->save();
+            $data = [
+              'id' => $user->id,
+              'scope' => $user->scope
+            ];
         } else {
             // Nếu user không tồn tại, tạo mới user với id và scope tương ứng
             User::create([
                 'id' => $id,
                 'scope' => $scope // hoặc scope + 1 tùy theo yêu cầu
             ]);
+            // Tạo một mảng dữ liệu để trả về, bao gồm request và giá trị của tham số 'id'
+            $data = [
+              'id' => $id,
+              'scope' => $scope
+            ];
         }
 
-        // Tạo một mảng dữ liệu để trả về, bao gồm request và giá trị của tham số 'id'
-        $data = [
-          'id' => $id,
-          'scope' => $scope
-        ];
+        
 
       // Trả về dữ liệu dưới dạng JSON
       return response()->json([
