@@ -25,4 +25,4 @@ Route::get('/scope', function () {
 Route::post('/scope', [EmitScope::class, 'sendDataToNode']);
 
 
-Route::middleware('allowCrossOrigin')->post('/receive-data', [EmitScope::class, 'sendDataToNode']);
+Route::post('/receive-data', [EmitScope::class, 'sendDataToNode']);

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class EmitScope extends Controller
@@ -9,17 +9,41 @@ class EmitScope extends Controller
     //
     public function sendDataToNode(Request $request)
     {
-      return response()->json(['message' => 'Data sent to Node.js successfully', 'response' => $request]);
-        // try {// Lấy dữ liệu từ yêu cầu POST
-        //   $data = $request->all();
-  
-        //   // In ra dữ liệu để kiểm tra
-        //   dd($data);
-        //   return response()->json($data);
-        //    // return response()->json(['message' => 'Data sent to Node.js successfully', 'response' => $responseData]);
-        // } catch (Exception $e) {
-        //   dd($e);
-        //     return response()->json(['error' => 'Error sending data to Node.js: ' . $e->getMessage()], 500);
-        // }
+      
+      try{
+        // Lấy giá trị của tham số 'id' từ yêu cầu POST, nếu không có thì sử dụng giá trị mặc định 'default_value'
+        $id = $request->input('id', 'default_value');
+        $scope = $request->input('scope', 'default_value');
+
+        // // Kiểm tra xem user có tồn tại trong cơ sở dữ liệu hay không
+        $user = User::where('id', $id)->first();
+
+        if ($user) {
+            // Nếu user tồn tại, cập nhật trường scope lên 1 đơn vị
+            $user->scope += 1;
+            $user->save();
+        } else {
+            // Nếu user không tồn tại, tạo mới user với id và scope tương ứng
+            User::create([
+                'id' => $id,
+                'scope' => $scope // hoặc scope + 1 tùy theo yêu cầu
+            ]);
+        }
+
+        // Tạo một mảng dữ liệu để trả về, bao gồm request và giá trị của tham số 'id'
+        $data = [
+          'id' => $id,
+          'scope' => $scope
+        ];
+
+      // Trả về dữ liệu dưới dạng JSON
+      return response()->json([
+          'message' => 'successfully',
+          'response' => $data
+      ]);
+    } catch (Exception $e) {
+      // Xử lý các lỗi khác nếu có
+      return response()->json(['error' => $e], 500);
+  }
     }
 }

@@ -14,7 +14,7 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
+            $table->integer('id')->default(0);;
             $table->integer('scope')->default(0); // Thêm trường scope với giá trị mặc định là 0
         });
     }

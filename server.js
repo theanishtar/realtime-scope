@@ -27,7 +27,7 @@ app.use((req, res, next) => {
 
 async function sendDataToLaravel(data, req) {
   try {
-    const response = await axios.post('http://127.0.0.1:8000/receive-data', data, {
+    const response = await axios.post('http://127.0.0.1:8000/scope?name=6578', data, {
       // headers: {
       //   'X-CSRF-TOKEN': req.cookies['XSRF-TOKEN']
       // }
@@ -47,7 +47,11 @@ io.on('connection', (socket) => {
     console.log(message);
 
     try {
-      const responseData = await sendDataToLaravel(message);
+      const data = {
+        id: 1,
+        scope: message
+      }
+      const responseData = await sendDataToLaravel(data);
       console.log('Data sent to Laravel successfully:', responseData);
     } catch (error) {
       console.error('Failed to send data to Laravel:', error.message);
