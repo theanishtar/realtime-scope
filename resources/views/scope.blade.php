@@ -39,8 +39,6 @@
     socket.on('sendChatToClient', (message) => {
       console.log(message)
       $('.chat-content ul').append(`<li>${message}</li>`);
-      const notify = `User ${message.data.id} vừa được tăng điểm lên ${message.data.scope}`;
-      alert(message)
     });
   });
   </script>
