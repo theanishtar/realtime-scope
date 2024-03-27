@@ -27,7 +27,9 @@ app.use((req, res, next) => {
 
 async function sendDataToLaravel(data, req) {
   try {
-    const response = await axios.post('http://127.0.0.1:8000/scope?name=6578', data, {
+    console.log(data)
+    const url = `http://127.0.0.1:8000/scope?name=${data.id}&scope=${data.scope}`;
+    const response = await axios.post(url, data, {
       // headers: {
       //   'X-CSRF-TOKEN': req.cookies['XSRF-TOKEN']
       // }
@@ -47,17 +49,15 @@ io.on('connection', (socket) => {
     console.log(message);
 
     try {
-      const data = {
-        id: 1,
-        scope: message
-      }
-      const responseData = await sendDataToLaravel(data);
+      const responseData = await sendDataToLaravel(message);
       console.log('Data sent to Laravel successfully:', responseData);
+      const noti = `User ${responseData.response.id} vừa tăng ${responseData.response.scope} điểm`;
+      socket.broadcast.emit('sendChatToClient', noti);
     } catch (error) {
       console.error('Failed to send data to Laravel:', error.message);
     }
 
-    socket.broadcast.emit('sendChatToClient', message);
+
   });
 
   socket.on('disconnect', () => {

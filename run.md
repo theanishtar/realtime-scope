@@ -5,4 +5,3 @@ npm install
 php artisan serve
 node server 
 ```
-

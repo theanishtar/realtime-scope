@@ -12,39 +12,7 @@
   <!-- CSS only -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
-  <style>
-  .chat-row {
-    margin: 50px;
-  }
 
-
-  ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-
-  ul li {
-    padding: 8px;
-    background: #928787;
-    margin-bottom: 20px;
-  }
-
-
-  ul li:nth-child(2n-2) {
-    background: #c3c5c5;
-  }
-
-
-  .chat-input {
-    border: 1px soild lightgray;
-    border-top-right-radius: 10px;
-    border-top-left-radius: 10px;
-    padding: 8px 10px;
-    color: #fff;
-  }
-  </style>
 </head>
 
 <body>
@@ -59,9 +27,14 @@
 
       <div class="chat-section">
         <div class="chat-box">
-          <div class="chat-input bg-primary" id="chatInput" contenteditable="">
+          <label for="id">ID:</label>
+          <input type="text" id="id" name="id">
 
-          </div>
+          <label for="scope">Scope:</label>
+          <input type="text" id="scope" name="scope">
+
+          <button id="confirmButton">Xác nhận</button>
+          </input>
         </div>
       </div>
     </div>
@@ -80,17 +53,37 @@
     let socket_port = '3000';
     let socket = io(ip_address + ':' + socket_port);
 
-    let chatInput = $('#chatInput');
+    let id = $('#id');
+    let scope = $('#scope');
 
-    chatInput.keypress(function(e) {
-      let message = $(this).html();
-      console.log(message);
-      if (e.which === 13 && !e.shiftKey) {
+    $(document).ready(function() {
+      $('#confirmButton').click(function() {
+        var idValue = $('#id').val();
+        var scopeValue = $('#scope').val();
+        console.log('ID:', idValue);
+        console.log('Scope:', scopeValue);
+        let message = {
+          id: idValue,
+          scope: scopeValue
+        }
         socket.emit('sendChatToServer', message);
-        chatInput.html('');
+        id.html('');
+        scope.html('');
         return false;
-      }
+      });
     });
+
+
+    // id.keypress(function(e) {
+    //   let message = $(this).html();
+    //   console.log(message);
+    //   if (e.which === 13 && !e.shiftKey) {
+    //     socket.emit('sendChatToServer', message);
+    //     id.html('');
+    //     scope.html('');
+    //     return false;
+    //   }
+    // });
 
     socket.on('sendChatToClient', (message) => {
       $('.chat-content ul').append(`<li>${message}</li>`);
