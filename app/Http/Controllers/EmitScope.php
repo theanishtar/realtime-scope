@@ -27,27 +27,21 @@ class EmitScope extends Controller
               'scope' => $user->scope
             ];
         } else {
-            // Nếu user không tồn tại, tạo mới user với id và scope tương ứng
             User::create([
                 'id' => $id,
-                'scope' => $scope // hoặc scope + 1 tùy theo yêu cầu
+                'scope' => $scope 
             ]);
-            // Tạo một mảng dữ liệu để trả về, bao gồm request và giá trị của tham số 'id'
             $data = [
               'id' => $id,
               'scope' => $scope
             ];
         }
 
-        
-
-      // Trả về dữ liệu dưới dạng JSON
       return response()->json([
           'message' => 'successfully',
           'response' => $data
       ]);
     } catch (Exception $e) {
-      // Xử lý các lỗi khác nếu có
       return response()->json(['error' => $e], 500);
   }
     }

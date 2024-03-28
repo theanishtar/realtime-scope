@@ -1,5 +1,7 @@
 # Xử lý dữ liệu Realtime với Laravel và SocketIO (NodeJS)
 
+![](./resources/images/main.png)
+
 ## Cài đặt và chạy
 ```bash
 composer install
